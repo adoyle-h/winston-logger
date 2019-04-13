@@ -1,0 +1,46 @@
+{
+  "name": "@adoyle.me/winston-logger",
+  "version": "0.0.0",
+  "description": "A wrapper of winston. For simple usage.",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "npm-run-all --parallel lint-*",
+    "lint-src": "eslint --quiet src",
+    "lint-test": "eslint --quiet test",
+    "pub": "npm run pub-patch",
+    "pub-patch": "npm-run-all version-patch pub-common",
+    "pub-minor": "npm-run-all version-minor pub-common",
+    "pub-major": "npm-run-all version-major pub-common",
+    "pub-common": "npm publish --access=public && git push --tags && git rebase develop master && git push --all && git checkout develop",
+    "version-patch": "npm version patch -m 'Bump: patch version to %s'",
+    "version-minor": "npm version minor -m 'Bump: minor version to %s'",
+    "version-major": "npm version major -m 'Bump: major version to %s'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "winston",
+    "logger"
+  ],
+  "author": "ADoyle <adoyle.h@gmail.com>",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adoyle-h/winston-logger.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adoyle-h/winston-logger/issues"
+  },
+  "homepage": "https://github.com/adoyle-h/winston-logger#readme",
+  "dependencies": {
+    "is_js": "^0.9.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-adoyle-style": "^3.3.1",
+    "npm-run-all": "^4.1.5"
+  }
+}
