@@ -7,8 +7,7 @@ module.exports = ({
 } = {}) => (info) => {
     const {level, message, label} = info;
     const timestamp = (new Date()).toISOString();
-    const splat = info[Symbol.for('splat')];
-    // const _splat = info.splat || [];
+    const splat = info[Symbol.for('splat')] || [];
     const msg = util.formatWithOptions({
         colors,
         depth,
