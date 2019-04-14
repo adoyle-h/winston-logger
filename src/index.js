@@ -21,7 +21,7 @@ const create = (upperConfig) => (config = {}) => {
         ],
     } = {...upperConfig, ...config};
     let {format} = config;
-    const defaultFileTransProps = {maxsize: 1024 * 100, maxFiles: 2};
+    const defaultFileTransProps = {maxsize: 1024 * 100, maxFiles: 2, tailable: true};
 
     const fileTransportsProps = files.map((props) => ({
         ...defaultFileTransProps, ...props,
