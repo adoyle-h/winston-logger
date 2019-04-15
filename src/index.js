@@ -5,7 +5,7 @@ const assert = require('assert');
 const {createLogger, format: formatter, transports: t} = require('winston');
 
 const {printf, combine} = formatter;
-const myFormat = require('./format');
+const {consoleFormat, fileFormat} = require('./format');
 
 const create = (upperConfig) => (config = {}) => {
     assert(typeof config === 'object', 'Parameter must be an object');
@@ -14,35 +14,35 @@ const create = (upperConfig) => (config = {}) => {
         level = 'debug',
         console: useConsole = false,
         depth = 3,
-        colors = false,
+        colors = true,
         files = [
             {filename: 'logs/error.log', level: 'error'},
             {filename: 'logs/all.log', level: 'debug'},
         ],
     } = {...upperConfig, ...config};
-    let {format} = config;
     const defaultFileTransProps = {maxsize: 1024 * 100, maxFiles: 2, tailable: true};
 
-    const fileTransportsProps = files.map((props) => ({
-        ...defaultFileTransProps, ...props,
-    }));
+    let commonFormats = [];
+    if (label) commonFormats.push(formatter.label({label}));
+    commonFormats = combine(...commonFormats);
 
-    const combs = [
-        printf(myFormat({depth, colors})),
-    ];
-    if (label) combs.unshift(formatter.label({label}));
-    if (!format) {
-        format = combine(...combs);
-    }
+
+    const fileTransportsProps = files.map((props) => ({
+        format: printf(fileFormat({depth})),
+        ...defaultFileTransProps,
+        ...props,
+    }));
 
     const transports = fileTransportsProps.map((f) => new t.File(f));
 
     if (useConsole === true) {
-        transports.push(new t.Console());
+        transports.push(new t.Console({
+            format: printf(consoleFormat({depth, colors})),
+        }));
     }
 
     const logger = createLogger({
-        level, format, transports,
+        level, transports, format: commonFormats,
     });
 
     return logger;
