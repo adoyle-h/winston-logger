@@ -6,6 +6,13 @@ const {createLogger, format: formatter, transports: t} = require('winston');
 
 const {printf, combine} = formatter;
 const {consoleFormat, fileFormat} = require('./format');
+const {DEBUG_LOG = ''} = process.env;
+const debugLogRegex = DEBUG_LOG.length > 0
+    ? new RegExp(DEBUG_LOG.replace('*', '.+'))
+    : null;
+const debugLogMatch = debugLogRegex
+    ? (label) => debugLogRegex.test(label)
+    : () => false;
 
 const create = (upperConfig) => (config = {}) => {
     assert(typeof config === 'object', 'Parameter must be an object');
@@ -19,6 +26,7 @@ const create = (upperConfig) => (config = {}) => {
             {filename: 'logs/error.log', level: 'error'},
             {filename: 'logs/all.log', level: 'debug'},
         ],
+        hiddenDebug = true,
     } = {...upperConfig, ...config};
     const defaultFileTransProps = {maxsize: 1024 * 100, maxFiles: 2, tailable: true};
 
@@ -44,6 +52,15 @@ const create = (upperConfig) => (config = {}) => {
     const logger = createLogger({
         level, transports, format: commonFormats,
     });
+
+    if (hiddenDebug) {
+        const loggerDebug = logger.debug;
+        logger.debug = (...args) => {
+            if (label && debugLogMatch(label)) {
+                loggerDebug(...args);
+            }
+        };
+    }
 
     return logger;
 };
